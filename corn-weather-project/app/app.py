@@ -1,18 +1,1 @@
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-
-st.title("Corn Yield and Weather Analysis")
-
-df = pd.read_csv("../data/corn_weather_clean.csv")
-
-st.write(df)
-
-state = st.selectbox("Select State", df["State"].unique())
-
-filtered = df[df["State"] == state]
-
-fig, ax = plt.subplots()
-ax.scatter(filtered["Avg_Temp"], filtered["Corn_Yield"])
-
-st.pyplot(fig)
+import streamlit as st\nimport pandas as pd\nimport plotly.express as px\n\n# Set the page configuration\nst.set_page_config(page_title='Corn Weather Dashboard', layout='wide')\n\n# Title of the app\nst.title('Corn Weather Dashboard')\n\n# Load sample weather data\n@st.cache_data\ndef load_data():\n    # Replace with your actual data source\n    data = {\n        'Date': pd.date_range(start='2023-01-01', periods=30, freq='D'),\n        'Temperature (°C)': [22, 21, 19, 23, 25, 26, 22, 20, 21, 22, 23, 24, 25, 26, 27, 23, 21, 20, 20, 22, 23, 23, 24, 25, 26, 27, 28, 29, 27, 26],\n        'Humidity (%)': [55, 60, 58, 57, 52, 54, 63, 60, 61, 59, 55, 54, 53, 62, 58, 57, 56, 55, 54, 58, 59, 60, 55, 53, 52, 51, 50, 54, 53, 51],\n        'Wind Speed (km/h)': [10, 12, 11, 13, 10, 12, 11, 9, 10, 12, 14, 13, 12, 11, 10, 9, 8, 10, 11, 12, 13, 14, 12, 11, 10, 9, 8, 7, 6, 5],\n        'Pressure (hPa)': [1012, 1013, 1011, 1010, 1014, 1015, 1016, 1014, 1012, 1011, 1010, 1009, 1012, 1013, 1014, 1015, 1008, 1009, 1011, 1013, 1012, 1011, 1010, 1009, 1008, 1010, 1011, 1012, 1013, 1014]\n    }\n    return pd.DataFrame(data)\n\n# Load the data\ndata = load_data()\n\n# Sidebar date range filter\ndate_range = st.sidebar.date_input('Select Date Range', value=(data['Date'].min(), data['Date'].max()))\nfiltered_data = data[(data['Date'] >= pd.to_datetime(date_range[0])) & (data['Date'] <= pd.to_datetime(date_range[1]))]\n\n# Metrics display\nst.metric('Average Temperature (°C)', round(filtered_data['Temperature (°C)'].mean(), 2))\nst.metric('Average Humidity (%)', round(filtered_data['Humidity (%)'].mean(), 2))\nst.metric('Average Wind Speed (km/h)', round(filtered_data['Wind Speed (km/h)'].mean(), 2))\nst.metric('Average Pressure (hPa)', round(filtered_data['Pressure (hPa)'].mean(), 2))\n\n# Temperature Trends Line Chart\nfig = px.line(filtered_data, x='Date', y='Temperature (°C)', title='Temperature Trends')\nst.plotly_chart(fig)\n\n# Weather Distribution Pie Chart\nweather_counts = filtered_data['Weather'].value_counts()  # You'll need a 'Weather' column in your dataset\nfig2 = px.pie(names=weather_counts.index, values=weather_counts.values, title='Weather Distribution')\nst.plotly_chart(fig2)\n\n# Data Table\nst.dataframe(filtered_data)\n\n# CSV Download button\n@st.cache_data\ndef convert_df_to_csv(df):\n    return df.to_csv(index=False).encode('utf-8')\n\ncsv = convert_df_to_csv(filtered_data)\nst.download_button(label='Download CSV', data=csv, file_name='weather_data.csv', mime='text/csv')\n
