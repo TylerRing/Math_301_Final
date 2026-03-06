@@ -1,1 +1,5 @@
-# Requirements for Corn Weather Project\n\n# Add your dependencies here
+streamlit
+pandas
+matplotlib
+requests
+numpy
