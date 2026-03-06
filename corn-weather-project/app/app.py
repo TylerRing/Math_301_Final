@@ -1,14 +1,25 @@
+import streamlit as st
+import pandas as pd
 import plotly.express as px
 
-# Demo data
-import pandas as pd
+# Title of the app
+st.title("Corn Weather Analysis")
 
-demo_data = {
-    'date': ['2021-01-01', '2021-02-01', '2021-03-01'],
-    'temperature': [21, 22, 23],
-    'humidity': [30, 35, 40]
-}
-df = pd.DataFrame(demo_data)
+# Load dataset (assuming a CSV file for demonstration; adjust as necessary)
+@st.cache
+def load_data():
+    data = pd.read_csv("path_to_your_corn_weather_data.csv")  # Update path as necessary
+    return data
 
-# Your Plotly code to visualize data here, using df
-print(df)
+# Load the data
+data = load_data()
+
+# Display a sample of the dataset
+st.write("Sample Data:")
+st.write(data.head())
+
+# Create a Plotly chart
+fig = px.line(data, x='Date', y='Temperature', title='Temperature Over Time')  # Adjust columns as necessary
+st.plotly_chart(fig)
+
+# Additional analysis or visualizations can be added below
