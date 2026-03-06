@@ -1,0 +1,1 @@
+# Corn Weather Project\n\nThis project analyzes and predicts weather patterns for corn growth.\n\n## Structure\n\n- pipeline/ - Data processing pipelines\n- data/ - Data files and datasets\n- app/ - Application code\n- .github/workflows/ - GitHub Actions workflows
